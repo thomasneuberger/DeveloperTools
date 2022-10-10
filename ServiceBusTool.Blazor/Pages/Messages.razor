@@ -1,0 +1,114 @@
+﻿@page "/messages"
+
+@inject IKeyValueListManager<MessageDefinition> MessageDefinitionManager
+@inject ILogger<Messages> Logger
+
+<h1>Message Definitions</h1>
+
+<div id="messagedefinitionlist" class="list">
+    @foreach (var messageDefinition in _messageDefinitions)
+    {
+        <div class="messagedefinition listitem" @onclick="() => OnMessageDefinitionSelected(messageDefinition)">
+            @messageDefinition.Name
+        </div>
+    }
+    <button class="btn btn-info" @onclick="AddMessageDefinition">Add connection</button>
+</div>
+
+<div id="messageDefinitionDetails" class="details">
+    @if (_selectedMessageDefinition is not null)
+    {
+        <EditForm Model="@_selectedMessageDefinition" OnInvalidSubmit="OnInvalidSubmit" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+
+            <h2>Edit Message definition</h2>
+            <hr />
+            <div class="form-group row">
+                <label for="messageDefinitionName" class="col-sm-2 col-form-label">Message definition name</label>
+                <div class="col-sm-10">
+                    <InputText id="messageDefinitionName" class="form-control" placeholder="Name" @bind-Value="_selectedMessageDefinition.Name" />
+                    <ValidationMessage For="() => _selectedMessageDefinition.Name"></ValidationMessage>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="messageDefinitionBody" class="col-sm-2 col-form-label">Message body</label>
+                <div class="col-sm-10">
+                    <InputTextArea id="messageDefinitionBody" class="form-control" placeholder="Body" 
+                                   @bind-Value="_selectedMessageDefinition.Body"
+                                   @oninput="OnBodyChanged"/>
+                    <ValidationMessage For="() => _selectedMessageDefinition.Body"></ValidationMessage>
+                    <label for="parameterList">Message parameters</label>
+                    <ul id="parameterList">
+                        @foreach (var parameter in _messageParameters)
+                        {
+                            <li>@parameter</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-info">Save</button>
+            @*<button type="button" class="btn btn-info" @onclick="OnDelete">Delete</button>*@
+        </EditForm>
+    }
+</div>
+
+@code {
+    readonly List<MessageDefinition> _messageDefinitions = new();
+    MessageDefinition? _selectedMessageDefinition;
+    readonly List<string> _messageParameters = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadConnections();
+    }
+
+    private async Task LoadConnections()
+    {
+        _selectedMessageDefinition = null;
+        _messageDefinitions.Clear();
+        var connections = (await MessageDefinitionManager
+            .GetValuesAsync())
+            .OrderBy(c => c.Name)
+            .ToList();
+        _messageDefinitions.AddRange(connections);
+    }
+
+    private void OnMessageDefinitionSelected(MessageDefinition messageDefinition)
+    {
+        _selectedMessageDefinition = messageDefinition;
+    }
+
+    private void AddMessageDefinition()
+    {
+        _selectedMessageDefinition = new MessageDefinition();
+    }
+
+    private void OnInvalidSubmit(EditContext obj)
+    {
+        Logger.LogDebug("Invalid submit");
+    }
+
+    private async Task OnValidSubmit(EditContext obj)
+    {
+        if (_selectedMessageDefinition is null)
+        {
+            Logger.LogError("Message definition saved, but selectedMessageDefinition is null.");
+            return;
+        }
+        await MessageDefinitionManager.SaveValueAsync(_selectedMessageDefinition);
+        await LoadConnections();
+    }
+
+    private void OnBodyChanged(ChangeEventArgs args)
+    {
+        _messageParameters.Clear();
+        if (_selectedMessageDefinition is null)
+        {
+            return;
+        }
+        _selectedMessageDefinition.Body = args.Value?.ToString() ?? string.Empty;
+        var parameters = _selectedMessageDefinition.FindParameters();
+        _messageParameters.AddRange(parameters);
+    }
+
+}

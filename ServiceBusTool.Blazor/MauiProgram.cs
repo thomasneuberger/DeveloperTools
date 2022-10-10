@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using ServiceBusTool.Blazor.Services;
 using ServiceBusTool.ServiceBus.Contract.Interfaces;
-using ServiceBusTool.ServiceBus.Services;
+using ServiceBusTool.ServiceBus.Managers;
 
 namespace ServiceBusTool.Blazor
 {

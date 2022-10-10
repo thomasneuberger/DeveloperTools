@@ -1,14 +1,16 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceBusTool.ServiceBus.Contract.Interfaces;
+using ServiceBusTool.ServiceBus.Models;
 
-namespace ServiceBusTool.ServiceBus.Services;
+namespace ServiceBusTool.ServiceBus.Managers;
 
 [ExcludeFromCodeCoverage]
 public static class Bootstrap
 {
     public static void AddServices(this IServiceCollection services)
     {
-        services.AddSingleton<IConnectionManager, ConnectionManager>();
+        services.AddSingleton<IKeyValueListManager<Connection>, ConnectionManager>();
+        services.AddSingleton<IKeyValueListManager<MessageDefinition>, MessageDefinitionManager>();
     }
 }

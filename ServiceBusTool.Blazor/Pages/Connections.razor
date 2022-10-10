@@ -1,6 +1,6 @@
 ﻿@page "/connections"
 
-@inject IConnectionManager ConnectionManager
+@inject IKeyValueListManager<Connection> ConnectionManager
 @inject ILogger<Connections> Logger
 
 <h1>Service Bus Connections</h1>
@@ -77,7 +77,7 @@
         _selectedConnection = null;
         _connections.Clear();
         var connections = (await ConnectionManager
-            .GetConnectionsAsync())
+            .GetValuesAsync())
             .OrderBy(c => c.Name)
             .ToList();
         _connections.AddRange(connections);
@@ -105,7 +105,7 @@
             Logger.LogError("Connection saved, but selectedConnection is null.");
             return;
         }
-        await ConnectionManager.SaveConnection(_selectedConnection);
+        await ConnectionManager.SaveValueAsync(_selectedConnection);
         await LoadConnections();
     }
 
@@ -128,7 +128,7 @@
             return;
         }
 
-        await ConnectionManager.DeleteConnection(_selectedConnection.Id);
+        await ConnectionManager.DeleteValueAsync(_selectedConnection.Id);
         await LoadConnections();
 
         ShowConfirmationDelete = false;
