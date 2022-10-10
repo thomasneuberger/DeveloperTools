@@ -1,0 +1,136 @@
+﻿@page "/connections"
+
+@inject IConnectionManager ConnectionManager
+@inject ILogger<Connections> Logger
+
+<h1>Service Bus Connections</h1>
+
+<div id="connectionlist" class="list">
+    @foreach (var connection in _connections)
+    {
+        <div class="connection listitem" @onclick="() => OnConnectionSelected(connection)">
+            @connection.Name
+        </div>
+    }
+    <button class="btn btn-info" @onclick="OnAddConnection">Add connection</button>
+</div>
+
+<div id="connectionDetails" class="details">
+    @if (_selectedConnection is not null)
+    {
+        <EditForm Model="@_selectedConnection" OnInvalidSubmit="OnInvalidSubmit" OnValidSubmit="@OnValidSubmit">
+            <DataAnnotationsValidator />
+
+            <h2>Edit Connection</h2>
+            <hr />
+            <div class="form-group row">
+                <label for="connectionName" class="col-sm-2 col-form-label">Connection name</label>
+                <div class="col-sm-10">
+                    <InputText id="connectionName" class="form-control" placeholder="Name" @bind-Value="_selectedConnection.Name" />
+                    <ValidationMessage For="() => _selectedConnection.Name"></ValidationMessage>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="connectionString" class="col-sm-2 col-form-label">Connection string</label>
+                <div class="col-sm-10">
+                    <InputText id="connectionString" class="form-control" placeholder="Connection string" @bind-Value="_selectedConnection.ConnectionString" />
+                    <ValidationMessage For="() => _selectedConnection.ConnectionString"></ValidationMessage>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-info">Save</button>
+            <button type="button" class="btn btn-info" @onclick="OnDelete">Delete</button>
+        </EditForm>
+
+        @if (ShowConfirmationDelete)
+        {
+            <div id="dialogConfirmDelete" class="modal" style="display: block" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Delete connection</h3>
+                        </div>
+                        <div class="modal-body">
+                            <label>Delete connection @_selectedConnection.Name?</label>
+                            <button class="btn btn-danger" @onclick="OnDeleteConfirmed">Delete</button>
+                            <button class="btn btn-close" @onclick="() => ShowConfirmationDelete = false">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    readonly List<Connection> _connections = new();
+    Connection? _selectedConnection;
+
+    private bool ShowConfirmationDelete { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadConnections();
+    }
+
+    private async Task LoadConnections()
+    {
+        _selectedConnection = null;
+        _connections.Clear();
+        var connections = (await ConnectionManager
+            .GetConnectionsAsync())
+            .OrderBy(c => c.Name)
+            .ToList();
+        _connections.AddRange(connections);
+    }
+
+    private void OnAddConnection()
+    {
+        _selectedConnection = new Connection();
+    }
+
+    private void OnConnectionSelected(Connection connection)
+    {
+        _selectedConnection = JsonSerializer.Deserialize<Connection>(JsonSerializer.Serialize(connection));
+    }
+
+    private void OnInvalidSubmit(EditContext obj)
+    {
+        Logger.LogDebug("Invalid submit");
+    }
+
+    private async Task OnValidSubmit(EditContext obj)
+    {
+        if (_selectedConnection is null)
+        {
+            Logger.LogError("Connection saved, but selectedConnection is null.");
+            return;
+        }
+        await ConnectionManager.SaveConnection(_selectedConnection);
+        await LoadConnections();
+    }
+
+    private void OnDelete()
+    {
+        if (_selectedConnection is null)
+        {
+            Logger.LogError("Connection deleted, but selectedConnection is null.");
+            return;
+        }
+        
+        ShowConfirmationDelete = true;
+    }
+
+    private async Task OnDeleteConfirmed()
+    {
+        if (_selectedConnection is null)
+        {
+            Logger.LogError("Connection deleted, but selectedConnection is null.");
+            return;
+        }
+
+        await ConnectionManager.DeleteConnection(_selectedConnection.Id);
+        await LoadConnections();
+
+        ShowConfirmationDelete = false;
+    }
+}
