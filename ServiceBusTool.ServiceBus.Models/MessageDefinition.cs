@@ -6,7 +6,7 @@ namespace ServiceBusTool.ServiceBus.Models;
 public class MessageDefinition : BaseKeyValueListItem, IValidatableObject
 {
     private static readonly Regex ParameterRegex =
-        new Regex("%(?'Parameter'\\w+)%", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("[^\\\\]?%(?'Parameter'\\w+)[^\\w\\\\]?%", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [Required]
     [MinLength(3)]
@@ -17,12 +17,16 @@ public class MessageDefinition : BaseKeyValueListItem, IValidatableObject
 
     public IReadOnlyList<string> FindParameters()
     {
+        if ((string?)Body is null)
+        {
+            return Array.Empty<string>();
+        }
         var matches = ParameterRegex.Matches(Body);
 
         return matches
             .SelectMany<Match, Group>(m => m.Groups)
             .Where(g => g.Name == "Parameter")
-            .Select(g => g.Value)
+            .Select(g => g.Value.ToUpperInvariant())
             .ToList();
     }
 
@@ -33,7 +37,7 @@ public class MessageDefinition : BaseKeyValueListItem, IValidatableObject
         {
             var parameters = messageDefinition.FindParameters();
             var totalCount = parameters.Count;
-            var uniqueCount = parameters.DistinctBy(p => p.ToUpperInvariant()).Count();
+            var uniqueCount = parameters.Distinct().Count();
             if (totalCount != uniqueCount)
             {
                 errors.Add(new ValidationResult("There are duplicate parameters in the message body. Parameters are case-insensitive.", new []{nameof(Body)}));
