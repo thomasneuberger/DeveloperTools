@@ -1,5 +1,111 @@
 ﻿@page "/"
+@using ServiceBusTool.Blazor.ViewModels
 
-<h1>Hello, world!</h1>
+@inject IKeyValueListManager<Connection> ConnectionManager
+@inject IKeyValueListManager<MessageDefinition> MessageDefinitionManager
+@inject ILogger<Index> Logger
 
-Welcome to your new app.
+@if (Connections is not null)
+{
+    <h2>Connection</h2>
+    <select id="connectionSelect" class="col-sm-4" @onchange="SelectConnection">
+        <option value=""></option>
+        @foreach (var connection in Connections)
+        {
+            <option value="@connection.Id">@connection.Name</option>
+        }
+    </select>
+
+    @if (SelectedConnection is not null)
+    {
+        <h2>Message</h2>
+        <EditForm Model="SelectedMessageDefinition" OnSubmit="SendMessage">
+            <InputTextArea class="col-sm-12" rows="6" @bind-Value="SelectedMessageDefinition.Body" @oninput="OnMessageChanged"></InputTextArea>
+            <label for="parameterList">Message parameters</label>
+            <ul id="parameterList">
+                @foreach (var parameter in MessageParameters)
+                {
+                    <li>
+                        <label for="@parameter.Name">@parameter.Name</label>
+                        <InputText id="@parameter.Name" @bind-Value="parameter.Value" placeholder="@parameter.Name" ></InputText>
+                    </li>
+                }
+            </ul>
+            <button type="submit">Send</button>
+        </EditForm>
+    }
+}
+    
+@code
+{
+    private IEnumerable<Connection>? Connections { get; set; }
+    private Connection? SelectedConnection { get; set; }
+
+    private MessageDefinition SelectedMessageDefinition { get; } = new();
+    private List<Parameter> MessageParameters { get; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Connections = await ConnectionManager.GetValuesAsync();
+    }
+
+    private void SelectConnection(ChangeEventArgs args)
+    {
+        if (args.Value is string value && Guid.TryParse(value, out Guid connectionId))
+        {
+            SelectedConnection = Connections?.FirstOrDefault(c => c.Id == connectionId);
+        }
+        else
+        {
+            SelectedConnection = null;
+        }
+    }
+
+    private void SelectMessageDefinition(MessageDefinition messageDefinition)
+    {
+        SelectedMessageDefinition.Body = messageDefinition.Body;
+    }
+
+    private void OnMessageChanged(ChangeEventArgs args)
+    {
+        if (args.Value is string body)
+        {
+            var message = new MessageDefinition
+            {
+                Body = body
+            };
+            var parameters = message.FindParameters();
+            var parametersToRemove = MessageParameters
+                .Where(k => !parameters.Contains(k.Name))
+                .ToList();
+            foreach (var parameter in parametersToRemove)
+            {
+                MessageParameters.Remove(parameter);
+            }
+            var parametersToAdd = parameters
+                .Where(p => MessageParameters.All(mp => mp.Name != p))
+                .Select(p => new Parameter
+                {
+                    Name = p,
+                    Value = string.Empty
+                })
+                .ToList();
+            MessageParameters.AddRange(parametersToAdd);
+            Logger.LogDebug("Found parameters: {Parameters}", JsonSerializer.Serialize(MessageParameters));
+        }
+        else
+        {
+            MessageParameters.Clear();
+        }
+    }
+
+    private void SendMessage()
+    {
+        var message = SelectedMessageDefinition.Body;
+        foreach (var parameter in MessageParameters)
+        {
+            message = message.Replace($"%{parameter.Name}%", parameter.Value, StringComparison.InvariantCultureIgnoreCase);
+        }
+        Logger.LogInformation("Send message {Message}", message);
+    }
+}

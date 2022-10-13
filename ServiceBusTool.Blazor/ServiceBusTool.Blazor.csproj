@@ -65,4 +65,8 @@
       <ProjectReference Include="..\ServiceBusTool.ServiceBus.Models\ServiceBusTool.ServiceBus.Models.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="ViewModels\" />
+    </ItemGroup>
+
 </Project>
