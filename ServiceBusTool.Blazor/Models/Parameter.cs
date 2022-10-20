@@ -1,4 +1,4 @@
-﻿namespace ServiceBusTool.Blazor.ViewModels;
+﻿namespace ServiceBusTool.Blazor.Models;
 
 public class Parameter
 {

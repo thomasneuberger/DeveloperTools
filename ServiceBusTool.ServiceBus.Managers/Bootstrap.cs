@@ -8,7 +8,7 @@ namespace ServiceBusTool.ServiceBus.Managers;
 [ExcludeFromCodeCoverage]
 public static class Bootstrap
 {
-    public static void AddServices(this IServiceCollection services)
+    public static void AddManagers(this IServiceCollection services)
     {
         services.AddSingleton<IKeyValueListManager<Connection>, ConnectionManager>();
         services.AddSingleton<IKeyValueListManager<MessageDefinition>, MessageDefinitionManager>();

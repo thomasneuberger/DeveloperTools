@@ -2,6 +2,7 @@
 using ServiceBusTool.Blazor.Services;
 using ServiceBusTool.ServiceBus.Contract.Interfaces;
 using ServiceBusTool.ServiceBus.Managers;
+using ServiceBusTool.ServiceBus.ViewModels;
 
 namespace ServiceBusTool.Blazor
 {
@@ -28,7 +29,8 @@ namespace ServiceBusTool.Blazor
             
             builder.Services.AddSingleton<IKeyValueStore, KeyValueStore>();
 
-            builder.Services.AddServices();
+            builder.Services.AddManagers();
+            builder.Services.AddViewModels();
 
             return builder.Build();
         }

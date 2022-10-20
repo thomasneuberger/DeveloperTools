@@ -63,10 +63,11 @@
       <ProjectReference Include="..\ServiceBusTool.ServiceBus.Contract\ServiceBusTool.ServiceBus.Contract.csproj" />
       <ProjectReference Include="..\ServiceBusTool.ServiceBus.Managers\ServiceBusTool.ServiceBus.Managers.csproj" />
       <ProjectReference Include="..\ServiceBusTool.ServiceBus.Models\ServiceBusTool.ServiceBus.Models.csproj" />
+      <ProjectReference Include="..\ServiceBusTool.ServiceBus.ViewModels\ServiceBusTool.ServiceBus.ViewModels.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="ViewModels\" />
+      <Folder Include="Models\" />
     </ItemGroup>
 
 </Project>
