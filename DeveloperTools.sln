@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBusTool.ServiceBus.M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBusTool.ServiceBus.ViewModels", "ServiceBusTool.ServiceBus.ViewModels\ServiceBusTool.ServiceBus.ViewModels.csproj", "{6A50C9CB-69EE-44E1-ABEA-E52765A17A80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBusTool.ServiceBus.Azure", "ServiceBusTool.ServiceBus.Azure\ServiceBusTool.ServiceBus.Azure.csproj", "{F508875E-CAC8-4731-B93C-5B93F2370F19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{6A50C9CB-69EE-44E1-ABEA-E52765A17A80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A50C9CB-69EE-44E1-ABEA-E52765A17A80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A50C9CB-69EE-44E1-ABEA-E52765A17A80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F508875E-CAC8-4731-B93C-5B93F2370F19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F508875E-CAC8-4731-B93C-5B93F2370F19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F508875E-CAC8-4731-B93C-5B93F2370F19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F508875E-CAC8-4731-B93C-5B93F2370F19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +66,7 @@ Global
 		{04D10610-5A11-45A5-88BA-D04DD303AC2E} = {3C9C2906-3495-4FD9-9874-0065356BBB9E}
 		{87E70DDA-3583-4693-87C0-64F3CBD3B447} = {3C9C2906-3495-4FD9-9874-0065356BBB9E}
 		{6A50C9CB-69EE-44E1-ABEA-E52765A17A80} = {3C9C2906-3495-4FD9-9874-0065356BBB9E}
+		{F508875E-CAC8-4731-B93C-5B93F2370F19} = {3C9C2906-3495-4FD9-9874-0065356BBB9E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A389E0EA-9B5F-4EDD-831C-116027F1AE32}

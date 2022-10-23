@@ -8,16 +8,27 @@ namespace ServiceBusTool.ServiceBus.ViewModels
     public class IndexViewModel
     {
         private readonly IKeyValueListManager<Connection> _connectionManager;
+        private readonly IServiceBus _serviceBus;
         private readonly ILogger<IndexViewModel> _logger;
 
-        public IndexViewModel(IKeyValueListManager<Connection> connectionManager, ILogger<IndexViewModel> logger)
+        private readonly List<string> _queueNames = new();
+
+        public IndexViewModel(
+            IKeyValueListManager<Connection> connectionManager,
+            IServiceBus serviceBus,
+            ILogger<IndexViewModel> logger)
         {
             _connectionManager = connectionManager;
+            _serviceBus = serviceBus;
             _logger = logger;
         }
 
         public IEnumerable<Connection>? Connections { get; private set; }
         public Connection? SelectedConnection { get; private set; }
+        public IEnumerable<string> QueueNames => _queueNames;
+        public string? SelectedQueueName { get; private set; }
+
+
 
         public MessageDefinition SelectedMessageDefinition { get; } = new();
         public List<Parameter> MessageParameters { get; } = new();
@@ -27,15 +38,30 @@ namespace ServiceBusTool.ServiceBus.ViewModels
             Connections = await _connectionManager.GetValuesAsync();
         }
 
-        public void SelectConnection(object? arg)
+        public async Task SelectConnectionAsync(object? arg)
         {
+            _queueNames.Clear();
             if (arg is string value && Guid.TryParse(value, out Guid connectionId))
             {
                 SelectedConnection = Connections?.FirstOrDefault(c => c.Id == connectionId);
+                if (SelectedConnection is not null)
+                {
+                    var queueNames = await _serviceBus
+                        .GetQueueNames(SelectedConnection, CancellationToken.None);
+                    _queueNames.AddRange(queueNames);
+                }
             }
             else
             {
                 SelectedConnection = null;
+            }
+        }
+
+        public void SelectQueueName(object? value)
+        {
+            if (value is string queueName)
+            {
+                SelectedQueueName = queueName;
             }
         }
 
@@ -79,12 +105,23 @@ namespace ServiceBusTool.ServiceBus.ViewModels
 
         public void SendMessage()
         {
+            if (SelectedConnection is null)
+            {
+                _logger.LogError("No connection selected.");
+                return;
+            }
+            if (SelectedQueueName is null)
+            {
+                _logger.LogError("No queue is selected.");
+                return;
+            }
             var message = SelectedMessageDefinition.Body;
             foreach (var parameter in MessageParameters)
             {
                 message = message.Replace($"%{parameter.Name}%", parameter.Value, StringComparison.InvariantCultureIgnoreCase);
             }
-            _logger.LogInformation("Send message {Message}", message);
+            _serviceBus.SendMessage(SelectedConnection, SelectedQueueName, SelectedMessageDefinition.Body, MessageParameters, CancellationToken.None);
+            _logger.LogInformation("Message {Message} sent", message);
         }
     }
 }

@@ -7,7 +7,7 @@
 @if (Model.Connections is not null)
 {
     <h2>Connection</h2>
-    <select id="connectionSelect" class="col-sm-4" @onchange="args => Model.SelectConnection(args.Value)">
+    <select id="connectionSelect" class="col-sm-4" @onchange="args => Model.SelectConnectionAsync(args.Value)">
         <option value=""></option>
         @foreach (var connection in Model.Connections)
         {
@@ -17,21 +17,33 @@
 
     @if (Model.SelectedConnection is not null)
     {
-        <h2>Message</h2>
-        <EditForm Model="Model.SelectedMessageDefinition" OnSubmit="Model.SendMessage">
-            <InputTextArea class="col-sm-12" rows="6" @bind-Value="Model.SelectedMessageDefinition.Body" @oninput="Model.OnMessageChanged"></InputTextArea>
-            <label for="parameterList">Message parameters</label>
-            <ul id="parameterList">
-                @foreach (var parameter in Model.MessageParameters)
-                {
-                    <li>
-                        <label for="@parameter.Name">@parameter.Name</label>
-                        <InputText id="@parameter.Name" @bind-Value="parameter.Value" placeholder="@parameter.Name" ></InputText>
-                    </li>
-                }
-            </ul>
+        <h2>Queue</h2>
+        <select id="queueSelect" class="col-sm-4" @onchange="args => Model.SelectQueueName(args.Value)">
+            <option value=""></option>
+            @foreach (var queueName in Model.QueueNames)
+            {
+                <option value="@queueName">@queueName</option>
+            }
+        </select>
+
+        @if (Model.SelectedQueueName is not null)
+        {
+            <h2>Message</h2>
+            <EditForm Model="Model.SelectedMessageDefinition" OnSubmit="Model.SendMessage">
+                <InputTextArea class="col-sm-12" rows="6" @bind-Value="Model.SelectedMessageDefinition.Body" @oninput="Model.OnMessageChanged"></InputTextArea>
+                <label for="parameterList">Message parameters</label>
+                <ul id="parameterList">
+                    @foreach (var parameter in Model.MessageParameters)
+                    {
+                        <li>
+                            <label for="@parameter.Name">@parameter.Name</label>
+                            <InputText id="@parameter.Name" @bind-Value="parameter.Value" placeholder="@parameter.Name" ></InputText>
+                        </li>
+                    }
+                </ul>
             <button type="submit">Send</button>
         </EditForm>
+        }
     }
 }
 

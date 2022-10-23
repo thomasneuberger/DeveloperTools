@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using ServiceBusTool.Blazor.Services;
+using ServiceBusTool.ServiceBus.Azure;
 using ServiceBusTool.ServiceBus.Contract.Interfaces;
 using ServiceBusTool.ServiceBus.Managers;
 using ServiceBusTool.ServiceBus.ViewModels;
@@ -31,6 +32,7 @@ namespace ServiceBusTool.Blazor
 
             builder.Services.AddManagers();
             builder.Services.AddViewModels();
+            builder.Services.AddAzure();
 
             return builder.Build();
         }
