@@ -12,5 +12,6 @@ public static class Bootstrap
     {
         services.AddSingleton<IKeyValueListManager<Connection>, ConnectionManager>();
         services.AddSingleton<IKeyValueListManager<MessageDefinition>, MessageDefinitionManager>();
+        services.AddSingleton<IKeyValueListManager<ParameterDefinition>, ParameterDefinitionManager>();
     }
 }

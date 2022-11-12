@@ -31,10 +31,10 @@ namespace ServiceBusTool.ServiceBus.ViewModels
 
         public MessageDefinition? SelectedMessageDefinition { get; private set; }
 
-        public async Task OnInitializedAsync()
-        {
-            await LoadConnections();
-        }
+        //public async Task OnInitializedAsync()
+        //{
+        //    await LoadConnections();
+        //}
 
         private async Task LoadConnections()
         {

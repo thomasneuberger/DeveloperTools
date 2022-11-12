@@ -22,7 +22,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBusTool.ServiceBus.M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBusTool.ServiceBus.ViewModels", "ServiceBusTool.ServiceBus.ViewModels\ServiceBusTool.ServiceBus.ViewModels.csproj", "{6A50C9CB-69EE-44E1-ABEA-E52765A17A80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBusTool.ServiceBus.Azure", "ServiceBusTool.ServiceBus.Azure\ServiceBusTool.ServiceBus.Azure.csproj", "{F508875E-CAC8-4731-B93C-5B93F2370F19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBusTool.ServiceBus.Azure", "ServiceBusTool.ServiceBus.Azure\ServiceBusTool.ServiceBus.Azure.csproj", "{F508875E-CAC8-4731-B93C-5B93F2370F19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

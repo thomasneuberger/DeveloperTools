@@ -11,5 +11,6 @@ public static class Bootstrap
         services.AddScoped<IndexViewModel>();
         services.AddScoped<ConnectionsViewModel>();
         services.AddScoped<MessagesViewModel>();
+        services.AddScoped<ParametersViewModel>();
     }
 }
