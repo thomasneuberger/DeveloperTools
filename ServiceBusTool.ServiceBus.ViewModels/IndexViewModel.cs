@@ -8,6 +8,7 @@ namespace ServiceBusTool.ServiceBus.ViewModels
     public class IndexViewModel
     {
         private readonly IKeyValueListManager<Connection> _connectionManager;
+        private readonly IKeyValueListManager<MessageDefinition> _messageDefinitionManager;
         private readonly IServiceBus _serviceBus;
         private readonly ILogger<IndexViewModel> _logger;
 
@@ -16,11 +17,13 @@ namespace ServiceBusTool.ServiceBus.ViewModels
         public IndexViewModel(
             IKeyValueListManager<Connection> connectionManager,
             IServiceBus serviceBus,
-            ILogger<IndexViewModel> logger)
+            ILogger<IndexViewModel> logger,
+            IKeyValueListManager<MessageDefinition> messageDefinitionManager)
         {
             _connectionManager = connectionManager;
             _serviceBus = serviceBus;
             _logger = logger;
+            _messageDefinitionManager = messageDefinitionManager;
         }
 
         public IEnumerable<Connection>? Connections { get; private set; }
@@ -28,9 +31,10 @@ namespace ServiceBusTool.ServiceBus.ViewModels
         public IEnumerable<string> QueueNames => _queueNames;
         public string? SelectedQueueName { get; private set; }
 
+        public IEnumerable<MessageDefinition>? MessageDefinitions { get; private set; }
+        public string? SelectedMessageDefinitionId { get; set; }
 
-
-        public MessageDefinition SelectedMessageDefinition { get; } = new();
+        public MessageDefinition SelectedMessage { get; } = new();
         public List<Parameter> MessageParameters { get; } = new();
 
         public async Task OnInitializedAsync()
@@ -57,17 +61,29 @@ namespace ServiceBusTool.ServiceBus.ViewModels
             }
         }
 
-        public void SelectQueueName(object? value)
+        public async Task SelectQueueName(object? value)
         {
             if (value is string queueName)
             {
                 SelectedQueueName = queueName;
+                MessageDefinitions = await _messageDefinitionManager.GetValuesAsync();
             }
         }
 
-        private void SelectMessageDefinition(MessageDefinition messageDefinition)
+        public void SelectMessageDefinition(object? value)
         {
-            SelectedMessageDefinition.Body = messageDefinition.Body;
+            if (MessageDefinitions is null)
+            {
+                _logger.LogError("Message definition selected, but MessageDefinitions is null.");
+                return;
+            }
+
+            if (value is string idString && Guid.TryParse(idString, out Guid id))
+            {
+                var messageDefinition = MessageDefinitions.First(m => m.Id == id);
+                SelectedMessage.Body = messageDefinition.Body;
+                OnMessageChanged(SelectedMessage.Body);
+            }
         }
 
         public void OnMessageChanged(object? args)
@@ -115,12 +131,12 @@ namespace ServiceBusTool.ServiceBus.ViewModels
                 _logger.LogError("No queue is selected.");
                 return;
             }
-            var message = SelectedMessageDefinition.Body;
+            var message = SelectedMessage.Body;
             foreach (var parameter in MessageParameters)
             {
                 message = message.Replace($"%{parameter.Name}%", parameter.Value, StringComparison.InvariantCultureIgnoreCase);
             }
-            _serviceBus.SendMessage(SelectedConnection, SelectedQueueName, SelectedMessageDefinition.Body, MessageParameters, CancellationToken.None);
+            _serviceBus.SendMessage(SelectedConnection, SelectedQueueName, SelectedMessage.Body, MessageParameters, CancellationToken.None);
             _logger.LogInformation("Message {Message} sent", message);
         }
     }

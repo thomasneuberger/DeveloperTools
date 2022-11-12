@@ -8,9 +8,9 @@ public static class Bootstrap
 {
     public static void AddViewModels(this IServiceCollection services)
     {
-        services.AddScoped<IndexViewModel>();
-        services.AddScoped<ConnectionsViewModel>();
-        services.AddScoped<MessagesViewModel>();
-        services.AddScoped<ParametersViewModel>();
+        services.AddTransient<IndexViewModel>();
+        services.AddTransient<ConnectionsViewModel>();
+        services.AddTransient<MessagesViewModel>();
+        services.AddTransient<ParametersViewModel>();
     }
 }

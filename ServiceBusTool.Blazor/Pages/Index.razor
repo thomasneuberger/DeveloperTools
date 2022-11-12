@@ -17,20 +17,37 @@
 
     @if (Model.SelectedConnection is not null)
     {
-        <h2>Queue</h2>
-        <select id="queueSelect" class="col-sm-4" @onchange="args => Model.SelectQueueName(args.Value)">
-            <option value=""></option>
-            @foreach (var queueName in Model.QueueNames)
+        <div class="row">
+            <div class="col-sm-4">
+                <h2>Queue</h2>
+                <select id="queueSelect" class="col-sm-12" @onchange="args => Model.SelectQueueName(args.Value)">
+                    <option value=""></option>
+                    @foreach (var queueName in Model.QueueNames)
+                    {
+                        <option value="@queueName">@queueName</option>
+                    }
+                </select>
+            </div>
+            @if (Model.MessageDefinitions is not null)
             {
-                <option value="@queueName">@queueName</option>
+                <div class="col-sm-4">
+                    <h2>Message Definition</h2>
+                    <select id="messagedefinitionselect" class="col-sm-12" @onchange="args => Model.SelectMessageDefinition(args.Value)">
+                        <option value=""></option>
+                        @foreach (var messageDefinition in Model.MessageDefinitions)
+                        {
+                            <option value="@messageDefinition.Id">@messageDefinition.Name</option>
+                        }
+                    </select>
+                </div>
             }
-        </select>
+        </div>
 
         @if (Model.SelectedQueueName is not null)
         {
             <h2>Message</h2>
-            <EditForm Model="Model.SelectedMessageDefinition" OnSubmit="Model.SendMessage">
-                <InputTextArea class="col-sm-12" rows="6" @bind-Value="Model.SelectedMessageDefinition.Body" @oninput="Model.OnMessageChanged"></InputTextArea>
+            <EditForm Model="Model.SelectedMessage" OnSubmit="Model.SendMessage">
+                <InputTextArea class="col-sm-12" rows="6" @bind-Value="Model.SelectedMessage.Body" @oninput="args => Model.OnMessageChanged(args.Value)"></InputTextArea>
                 <label for="parameterList">Message parameters</label>
                 <ul id="parameterList">
                     @foreach (var parameter in Model.MessageParameters)
