@@ -51,6 +51,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      <AndroidResource Remove="Models\**" />
+      <Compile Remove="Models\**" />
+      <Content Remove="Models\**" />
+      <EmbeddedResource Remove="Models\**" />
+      <MauiXaml Remove="Models\**" />
+      <None Remove="Models\**" />
+    </ItemGroup>
+
+    <ItemGroup>
       <None Include="..\.editorconfig" Link=".editorconfig" />
     </ItemGroup>
 
@@ -65,10 +74,6 @@
       <ProjectReference Include="..\ServiceBusTool.ServiceBus.Managers\ServiceBusTool.ServiceBus.Managers.csproj" />
       <ProjectReference Include="..\ServiceBusTool.ServiceBus.Models\ServiceBusTool.ServiceBus.Models.csproj" />
       <ProjectReference Include="..\ServiceBusTool.ServiceBus.ViewModels\ServiceBusTool.ServiceBus.ViewModels.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Models\" />
     </ItemGroup>
 
 </Project>
