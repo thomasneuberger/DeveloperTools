@@ -44,5 +44,5 @@ jobs:
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
-          name: mauibeach-windows-ci-build
+          name: service-bus-tool-windows
           path: ServiceBusTool.Blazor/bin/Release/net6.0-windows10.0.19041.0/win10-x64/AppPackages/ServiceBusTool.Blazor*/ServiceBusTool.Blazor*.msix
