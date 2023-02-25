@@ -43,12 +43,13 @@ jobs:
         shell: pwsh
         env:
           PFX_CONTENT: ${{ secrets.SIGNINGCERTIFICATE }}
+          GITHUB_OUTPUT: variables.GITHUB_OUTPUT
         run: |
           $pfxPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "ServiceBusTool.Blazor";
           $pfxPath = Join-Path -Path $pfxPath -ChildPath "cert.pfx";
           $encodedBytes = [System.Convert]::FromBase64String($env:PFX_CONTENT);
           Set-Content $pfxPath -Value $encodedBytes -AsByteStream;
-          "PFX_PATH=$pfxPath" | Out-File $GITHUB_OUTPUT
+          Write-Output "::set-output name=PFX_PATH::$pfxPath";
 
       - name: Build MAUI Windows
         run: dotnet publish ServiceBusTool.Blazor/ServiceBusTool.Blazor.csproj -c Release -f net6.0-windows10.0.19041.0 --no-restore
