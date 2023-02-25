@@ -38,8 +38,26 @@ jobs:
       - name: Restore Dependencies
         run: dotnet restore ServiceBusTool.Blazor/ServiceBusTool.Blazor.csproj
 
+      - name: Create PFX certificate
+        id: create-pfx
+        shell: pwsh
+        env:
+          PFX_CONTENT: ${{ secrets.SIGNINGCERTIFICATE }}
+        run: |
+          $pfxPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "cert.pfx";
+          $encodedBytes = [System.Convert]::FromBase64String($env:PFX_CONTENT);
+          Set-Content $pfxPath -Value $encodedBytes -AsByteStream;
+          Write-Output "::set-output name=PFX_PATH::$pfxPath";
+
       - name: Build MAUI Windows
         run: dotnet publish ServiceBusTool.Blazor/ServiceBusTool.Blazor.csproj -c Release -f net6.0-windows10.0.19041.0 --no-restore
+
+      - name: Delete PFX certificate
+        shell: pwsh
+        env:
+          PFX_PATH: ${{ steps.create-pfx.outputs.PFX_PATH }}
+        run: |
+          Remove-Item -Path $env:PFX_PATH;
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v3.1.0
