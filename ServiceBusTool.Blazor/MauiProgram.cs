@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MudBlazor.Services;
 using ServiceBusTool.Blazor.Services;
 using ServiceBusTool.ServiceBus.Azure;
 using ServiceBusTool.ServiceBus.Contract.Interfaces;
@@ -29,6 +30,8 @@ namespace ServiceBusTool.Blazor
 #endif
             
             builder.Services.AddSingleton<IKeyValueStore, KeyValueStore>();
+
+            builder.Services.AddMudServices();
 
             builder.Services.AddManagers();
             builder.Services.AddViewModels();

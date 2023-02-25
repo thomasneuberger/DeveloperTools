@@ -31,12 +31,7 @@ namespace ServiceBusTool.ServiceBus.ViewModels
 
         public MessageDefinition? SelectedMessageDefinition { get; private set; }
 
-        //public async Task OnInitializedAsync()
-        //{
-        //    await LoadConnections();
-        //}
-
-        private async Task LoadConnections()
+        public async Task LoadMessageDefinitions()
         {
             SelectedMessageDefinition = null;
             _messageDefinitions.Clear();
@@ -50,11 +45,15 @@ namespace ServiceBusTool.ServiceBus.ViewModels
         public void OnMessageDefinitionSelected(MessageDefinition messageDefinition)
         {
             SelectedMessageDefinition = messageDefinition;
+            _messageParameters.Clear();
+            _messageParameters.AddRange(SelectedMessageDefinition.FindParameters());
         }
 
         public void AddMessageDefinition()
         {
             SelectedMessageDefinition = new MessageDefinition();
+            _messageParameters.Clear();
+            _messageParameters.AddRange(SelectedMessageDefinition.FindParameters());
         }
 
         public async Task OnSubmit()
@@ -65,7 +64,7 @@ namespace ServiceBusTool.ServiceBus.ViewModels
                 return;
             }
             await _messageDefinitionManager.SaveValueAsync(SelectedMessageDefinition);
-            await LoadConnections();
+            await LoadMessageDefinitions();
         }
 
         public void OnBodyChanged(object? body)
@@ -78,6 +77,18 @@ namespace ServiceBusTool.ServiceBus.ViewModels
             SelectedMessageDefinition.Body = body?.ToString() ?? string.Empty;
             var parameters = SelectedMessageDefinition.FindParameters();
             _messageParameters.AddRange(parameters);
+        }
+
+        public async Task OnDelete()
+        {
+            if (SelectedMessageDefinition is null)
+            {
+                _logger.LogError("Message definition deleted, but SelectedMessageDefinition is null.");
+                return;
+            }
+
+            await _messageDefinitionManager.DeleteValueAsync(SelectedMessageDefinition.Id);
+            await LoadMessageDefinitions();
         }
     }
 }
