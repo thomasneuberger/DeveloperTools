@@ -28,31 +28,32 @@ namespace ServiceBusTool.ServiceBus.ViewModels
 
         public IEnumerable<Connection>? Connections { get; private set; }
         public Connection? SelectedConnection { get; private set; }
-        public IEnumerable<string> QueueNames => _queueNames;
-        public string? SelectedQueueName { get; private set; }
+        public List<string> QueueNames => _queueNames;
+        public string? SelectedQueueName { get; set; }
 
         public IEnumerable<MessageDefinition>? MessageDefinitions { get; private set; }
-        public string? SelectedMessageDefinitionId { get; set; }
 
-        public MessageDefinition SelectedMessage { get; } = new();
+        public string SelectedMessage { get; set; } = string.Empty;
         public List<Parameter> MessageParameters { get; } = new();
+
+        public event EventHandler? QueueNamesLoaded;
 
         public async Task OnInitializedAsync()
         {
             Connections = await _connectionManager.GetValuesAsync();
         }
 
-        public async Task SelectConnectionAsync(object? arg)
+        public void SelectConnection(Connection? connection)
         {
             _queueNames.Clear();
-            if (arg is string value && Guid.TryParse(value, out Guid connectionId))
+            if (connection is not null)
             {
-                SelectedConnection = Connections?.FirstOrDefault(c => c.Id == connectionId);
+                SelectedConnection = connection;
                 if (SelectedConnection is not null)
                 {
-                    var queueNames = await _serviceBus
-                        .GetQueueNames(SelectedConnection, CancellationToken.None);
-                    _queueNames.AddRange(queueNames);
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    LoadQueueNamesAsync(SelectedConnection);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 }
             }
             else
@@ -61,12 +62,20 @@ namespace ServiceBusTool.ServiceBus.ViewModels
             }
         }
 
-        public async Task SelectQueueName(object? value)
+        private async Task LoadQueueNamesAsync(Connection connection)
+        {
+            var queueNames = await _serviceBus
+                .GetQueueNames(connection, CancellationToken.None);
+            _queueNames.AddRange(queueNames);
+            MessageDefinitions = await _messageDefinitionManager.GetValuesAsync();
+            QueueNamesLoaded?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void SelectQueueName(object? value)
         {
             if (value is string queueName)
             {
                 SelectedQueueName = queueName;
-                MessageDefinitions = await _messageDefinitionManager.GetValuesAsync();
             }
         }
 
@@ -81,13 +90,12 @@ namespace ServiceBusTool.ServiceBus.ViewModels
             if (value is string idString && Guid.TryParse(idString, out Guid id))
             {
                 var messageDefinition = MessageDefinitions.First(m => m.Id == id);
-                SelectedMessage.Body = messageDefinition.Body;
-                OnMessageChanged(SelectedMessage.Body);
+                SelectedMessage = messageDefinition.Body;
+                OnMessageChanged(SelectedMessage);
             }
         }
 
-        public void OnMessageChanged(object? args)
-        {
+        public void OnMessageChanged(object? args) {
             if (args is string body)
             {
                 var message = new MessageDefinition
@@ -131,12 +139,12 @@ namespace ServiceBusTool.ServiceBus.ViewModels
                 _logger.LogError("No queue is selected.");
                 return;
             }
-            var message = SelectedMessage.Body;
+            var message = SelectedMessage;
             foreach (var parameter in MessageParameters)
             {
                 message = message.Replace($"%{parameter.Name}%", parameter.Value, StringComparison.InvariantCultureIgnoreCase);
             }
-            _serviceBus.SendMessage(SelectedConnection, SelectedQueueName, SelectedMessage.Body, MessageParameters, CancellationToken.None);
+            _serviceBus.SendMessage(SelectedConnection, SelectedQueueName, SelectedMessage, MessageParameters, CancellationToken.None);
             _logger.LogInformation("Message {Message} sent", message);
         }
     }

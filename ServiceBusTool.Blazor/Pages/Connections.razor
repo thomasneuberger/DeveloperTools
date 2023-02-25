@@ -1,62 +1,47 @@
 ﻿@page "/connections"
-@inherits ConnectionsBase
 
-@inject ILogger<Connections> Logger
-
-<h1>Service Bus Connections</h1>
-
-<div id="connectionlist" class="list">
-    @foreach (var connection in Model.Connections)
-    {
-        <div class="connection listitem" @onclick="() => Model.OnConnectionSelected(connection)">
-            @connection.Name
-        </div>
-    }
-    <button class="btn btn-info" @onclick="Model.OnAddConnection">Add connection</button>
-</div>
-
-<div id="connectionDetails" class="details">
+<MudPaper Class="pa-5" Height="100%">
+    <MudGrid Spacing="5">
+        <MudItem xs="12">
+            <MudText Typo="Typo.h3">Service Bus Connections</MudText>
+        </MudItem>
+        
+        <MudItem xs="12" md="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudList Clickable="true">
+                        @foreach (var connection in Model.Connections)
+                        {
+                            <MudListItem Text="@connection.Name" Value="@connection.Id" @onclick="() => Model.OnConnectionSelected(connection)" />
+                        }
+                    </MudList>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="Model.OnAddConnection">Add connection</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        
     @if (Model.SelectedConnection is not null)
     {
-        <EditForm Model="@Model.SelectedConnection" OnValidSubmit="Model.OnSubmit">
-            <DataAnnotationsValidator />
-
-            <h2>Edit Connection</h2>
-            <hr />
-            <div class="form-group row">
-                <label for="connectionName" class="col-sm-2 col-form-label">Connection name</label>
-                <div class="col-sm-10">
-                    <InputText id="connectionName" class="form-control" placeholder="Name" @bind-Value="Model.SelectedConnection.Name" />
-                    <ValidationMessage For="() => Model.SelectedConnection.Name"></ValidationMessage>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="connectionString" class="col-sm-2 col-form-label">Connection string</label>
-                <div class="col-sm-10">
-                    <InputText id="connectionString" class="form-control" placeholder="Connection string" @bind-Value="Model.SelectedConnection.ConnectionString" />
-                    <ValidationMessage For="() => Model.SelectedConnection.ConnectionString"></ValidationMessage>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-info">Save</button>
-            <button type="button" class="btn btn-info" @onclick="OnDelete">Delete</button>
-        </EditForm>
-
-        @if (ShowConfirmationDelete)
-        {
-            <div id="dialogConfirmDelete" class="modal" style="display: block" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3 class="modal-title">Delete connection</h3>
-                        </div>
-                        <div class="modal-body">
-                            <label>Delete connection @Model.SelectedConnection.Name?</label>
-                            <button class="btn btn-danger" @onclick="OnDeleteConfirmed">Delete</button>
-                            <button class="btn btn-close" @onclick="() => ShowConfirmationDelete = false">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
+        <MudItem xs="12" md="6">
+            <EditForm Model="@Model.SelectedConnection" OnValidSubmit="Model.OnSubmit">
+                <DataAnnotationsValidator />
+                <MudCard>
+                    <MudCardHeader>
+                        <MudText Typo="Typo.h4">Edit Connection</MudText>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudTextField T="string" @bind-Value="Model.SelectedConnection.Name" For="() => Model.SelectedConnection.Name" Label="Connection name" />
+                        <MudTextField T="string" @bind-Value="Model.SelectedConnection.ConnectionString" For="() => Model.SelectedConnection.ConnectionString" Label="Connection string" Lines="3" />
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Text" Color="Color.Primary">Save</MudButton>
+                        <MudButton Variant="Variant.Text" Color="Color.Warning" @onclick="OnDelete">Delete</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </EditForm>
+        </MudItem>
     }
-</div>
+    </MudGrid>
+</MudPaper>

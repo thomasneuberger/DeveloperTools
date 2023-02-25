@@ -1,50 +1,102 @@
 ﻿@page "/"
-@using ServiceBusTool.ServiceBus.ViewModels
-
-@inject IndexViewModel Model
 
 @if (Model.Connections is not null)
 {
-    <h2>Connection</h2>
-    <select id="connectionSelect" class="col-sm-4" @onchange="args => Model.SelectConnectionAsync(args.Value)">
-        <option value=""></option>
-        @foreach (var connection in Model.Connections)
-        {
-            <option value="@connection.Id">@connection.Name</option>
-        }
-    </select>
-
-    @if (Model.SelectedConnection is not null)
-    {
-        <div class="row">
-            <div class="col-sm-4">
-                <h2>Queue</h2>
-                <select id="queueSelect" class="col-sm-12" @onchange="args => Model.SelectQueueName(args.Value)">
-                    <option value=""></option>
-                    @foreach (var queueName in Model.QueueNames)
-                    {
-                        <option value="@queueName">@queueName</option>
-                    }
-                </select>
-            </div>
-            @if (Model.MessageDefinitions is not null)
-            {
-                <div class="col-sm-4">
-                    <h2>Message Definition</h2>
-                    <select id="messagedefinitionselect" class="col-sm-12" @onchange="args => Model.SelectMessageDefinition(args.Value)">
-                        <option value=""></option>
-                        @foreach (var messageDefinition in Model.MessageDefinitions)
+    <MudGrid Spacing="5">
+        <MudItem xs="4">
+            <MudCard>
+                <MudCardHeader>
+                    <MudText Typo="Typo.h5">Connection</MudText>
+                </MudCardHeader>
+                
+                <MudCardContent>
+                    <MudSelect T="Connection" ToStringFunc="c => c?.Name" @bind-Value="SelectedConnection">
+                        @foreach (var connection in Model.Connections)
                         {
-                            <option value="@messageDefinition.Id">@messageDefinition.Name</option>
+                            <MudSelectItem Value="connection"></MudSelectItem>
                         }
-                    </select>
-                </div>
-            }
-        </div>
+                    </MudSelect>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        
+        <MudItem xs="8"></MudItem>
 
+        @if (Model.SelectedConnection is not null)
+        {
+            <MudItem xs="4">
+                <MudCard>
+                    <MudCardHeader>
+                        <MudText Typo="Typo.h5">Queue</MudText>
+                    </MudCardHeader>
+                
+                    <MudCardContent>
+                        <MudSelect T="string" @bind-Value="Model.SelectedQueueName">
+                            @foreach (var queueName in Model.QueueNames)
+                            {
+                                <MudSelectItem Value="queueName"></MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            @if (Model.SelectedQueueName is not null)
+            {
+                @*<MudItem xs="4">
+                    <MudCard>
+                        <MudCardHeader>
+                            <MudText Typo="Typo.h5">Message Definition</MudText>
+                        </MudCardHeader>
+
+                        <MudCardContent>
+                            <MudSelect T="MessageDefinition" ToStringFunc="d => d?.Name" @bind-Value="SelectedMessageDefinition" @onchange="args => Model.SelectMessageDefinition(args.Value)">
+                                @if (Model.MessageDefinitions is not null)
+                                {
+                                    @foreach (var messageDefinition in Model.MessageDefinitions)
+                                    {
+                                        <MudSelectItem Value="@messageDefinition"></MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <MudItem xs="4"></MudItem>*@
+
+                <MudItem xs="12">
+                    <EditForm Model="Model.SelectedMessage" OnSubmit="Model.SendMessage">
+                        <MudCard>
+                            <MudCardHeader>
+                                <MudText Typo="Typo.h5">Message</MudText>
+                            </MudCardHeader>
+
+                            <MudCardContent>
+                                <MudTextField T="string" @bind-Value="Message" DebounceInterval="1000" />
+
+                                <MudText Typo="Typo.h6">Message parameters</MudText>
+                                @foreach (var parameter in Model.MessageParameters)
+                                {
+                                    <MudTextField T="string" HelperText="@parameter.Name" @bind-Value="@parameter.Value" For="() => parameter.Value" />
+                                }
+                            </MudCardContent>
+                            
+                            <MudCardActions>
+                                <MudButton ButtonType="ButtonType.Submit">Send</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </EditForm>
+                </MudItem>
+            }
+        }
+
+    </MudGrid>
+
+    @*@if (Model.SelectedConnection is not null)
+    {
         @if (Model.SelectedQueueName is not null)
         {
-            <h2>Message</h2>
             <EditForm Model="Model.SelectedMessage" OnSubmit="Model.SendMessage">
                 <InputTextArea class="col-sm-12" rows="6" @bind-Value="Model.SelectedMessage.Body" @oninput="args => Model.OnMessageChanged(args.Value)"></InputTextArea>
                 <label for="parameterList">Message parameters</label>
@@ -60,12 +112,5 @@
             <button type="submit">Send</button>
         </EditForm>
         }
-    }
-}
-
-@code{
-    protected override async Task OnInitializedAsync()
-    {
-        await Model.OnInitializedAsync();
-    }
+    }*@
 }

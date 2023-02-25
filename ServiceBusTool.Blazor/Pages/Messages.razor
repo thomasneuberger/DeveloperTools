@@ -1,55 +1,59 @@
 ﻿@page "/messages"
-@using ServiceBusTool.ServiceBus.ViewModels
 
-@inject MessagesViewModel Model
-@inject IKeyValueListManager<MessageDefinition> MessageDefinitionManager
-@inject ILogger<Messages> Logger
+<MudPaper Class="pa-5" Height="100%">
+    <MudGrid Spacing="5">
+        <MudItem xs="12">
+            <MudText Typo="Typo.h3">Message Definitions</MudText>
+        </MudItem>
 
-<h1>Message Definitions</h1>
+        <MudItem xs="12" md="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudList Clickable="true">
+                        @foreach (var messageDefinition in Model.MessageDefinitions)
+                        {
+                            <MudListItem Text="@messageDefinition.Name" Value="@messageDefinition.Id" @onclick="() => Model.OnMessageDefinitionSelected(messageDefinition)" />
+                        }
+                    </MudList>
+                </MudCardContent>
 
-<div id="messagedefinitionlist" class="list">
-    @foreach (var messageDefinition in Model.MessageDefinitions)
-    {
-        <div class="messagedefinition listitem" @onclick="() => Model.OnMessageDefinitionSelected(messageDefinition)">
-            @messageDefinition.Name
-        </div>
-    }
-    <button class="btn btn-info" @onclick="Model.AddMessageDefinition">Add message</button>
-</div>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="Model.AddMessageDefinition">Add message</MudButton>
+                </MudCardActions>
+            </MudCard>
 
-<div id="messageDefinitionDetails" class="details">
+        </MudItem>
+        
     @if (Model.SelectedMessageDefinition is not null)
     {
-        <EditForm Model="@Model.SelectedMessageDefinition" OnValidSubmit="Model.OnSubmit">
-            <DataAnnotationsValidator />
+        <MudItem xs="12" md="6">
+            <EditForm Model="@Model.SelectedMessageDefinition" OnValidSubmit="Model.OnSubmit">
+                <DataAnnotationsValidator />
+                <MudCard>
+                    <MudCardHeader>
+                        <MudText Typo="Typo.h4">Edit Message definition</MudText>
+                    </MudCardHeader>
 
-            <h2>Edit Message definition</h2>
-            <hr />
-            <div class="form-group row">
-                <label for="messageDefinitionName" class="col-sm-2 col-form-label">Message definition name</label>
-                <div class="col-sm-10">
-                    <InputText id="messageDefinitionName" class="form-control" placeholder="Name" @bind-Value="Model.SelectedMessageDefinition.Name" />
-                    <ValidationMessage For="() => Model.SelectedMessageDefinition.Name"></ValidationMessage>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="messageDefinitionBody" class="col-sm-2 col-form-label">Message body</label>
-                <div class="col-sm-10">
-                    <InputTextArea id="messageDefinitionBody" class="form-control" placeholder="Body" 
-                                   @bind-Value="Model.SelectedMessageDefinition.Body"
-                                   @oninput="Model.OnBodyChanged"/>
-                    <ValidationMessage For="() => Model.SelectedMessageDefinition.Body"></ValidationMessage>
-                    <label for="parameterList">Message parameters</label>
-                    <ul id="parameterList">
-                        @foreach (var parameter in Model.MessageParameters)
-                        {
-                            <li>@parameter</li>
-                        }
-                    </ul>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-info">Save</button>
-            @*<button type="button" class="btn btn-info" @onclick="OnDelete">Delete</button>*@
-        </EditForm>
+                    <MudCardContent>
+                            <MudTextField T="string" @bind-Value="Model.SelectedMessageDefinition.Name" For="() => Model.SelectedMessageDefinition.Name" Label="Message definition name" />
+                            <MudTextField T="string" @bind-Value="Body" For="() => Body" Label="Body" Lines="10" />
+
+                            <MudText Typo="Typo.h6">Message parameters</MudText>
+                            <MudList>
+                                @foreach (var parameter in Model.MessageParameters)
+                                {
+                                    <MudListItem Text="@parameter"></MudListItem>
+                                }
+                            </MudList>
+                    </MudCardContent>
+
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Text" Color="Color.Primary">Save</MudButton>
+                            <MudButton Variant="Variant.Text" Color="Color.Warning" @onclick="OnDelete">Delete</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </EditForm>
+        </MudItem>
     }
-</div>
+    </MudGrid>
+</MudPaper>
