@@ -36,13 +36,13 @@ jobs:
         run: dotnet workload install maui --ignore-failed-sources
 
       - name: Restore Dependencies
-        run: dotnet restore src/DeveloperTools/ServiceBusTool.Blazor/ServiceBusTool.Blazor.csproj
+        run: dotnet restore ServiceBusTool.Blazor/ServiceBusTool.Blazor.csproj
 
       - name: Build MAUI Windows
-        run: dotnet publish src/DeveloperTools/ServiceBusTool.Blazor/ServiceBusTool.Blazor.csproj -c Release -f net6.0-windows10.0.19041.0 --no-restore
+        run: dotnet publish ServiceBusTool.Blazor/ServiceBusTool.Blazor.csproj -c Release -f net6.0-windows10.0.19041.0 --no-restore
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
           name: mauibeach-windows-ci-build
-          path: src/DeveloperTools/ServiceBusTool.Blazor/bin/Release/net6.0-windows10.0.19041.0/win10-x64/AppPackages/ServiceBusTool.Blazor*/ServiceBusTool.Blazor*.msix
+          path: ServiceBusTool.Blazor/bin/Release/net6.0-windows10.0.19041.0/win10-x64/AppPackages/ServiceBusTool.Blazor*/ServiceBusTool.Blazor*.msix
