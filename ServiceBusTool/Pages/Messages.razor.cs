@@ -2,7 +2,7 @@
 using MudBlazor;
 using ServiceBusTool.ServiceBus.ViewModels;
 
-namespace ServiceBusTool.Blazor.Pages;
+namespace ServiceBusTool.Pages;
 
 public partial class Messages
 {

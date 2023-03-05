@@ -1,4 +1,4 @@
-﻿namespace ServiceBusTool.Blazor.Shared;
+﻿namespace ServiceBusTool.Shared;
 
 public partial class MainLayout
 {

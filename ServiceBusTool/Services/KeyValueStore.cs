@@ -1,6 +1,6 @@
 ﻿using ServiceBusTool.ServiceBus.Contract.Interfaces;
 
-namespace ServiceBusTool.Blazor.Services;
+namespace ServiceBusTool.Services;
 
 public class KeyValueStore : IKeyValueStore
 {

@@ -3,7 +3,7 @@ using MudBlazor;
 using ServiceBusTool.ServiceBus.Models;
 using ServiceBusTool.ServiceBus.ViewModels;
 
-namespace ServiceBusTool.Blazor.Pages;
+namespace ServiceBusTool.Pages;
 
 public partial class Index
 {

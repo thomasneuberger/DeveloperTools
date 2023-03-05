@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
-using ServiceBusTool.Blazor.Services;
 using ServiceBusTool.ServiceBus.Azure;
 using ServiceBusTool.ServiceBus.Contract.Interfaces;
 using ServiceBusTool.ServiceBus.Managers;
 using ServiceBusTool.ServiceBus.ViewModels;
+using ServiceBusTool.Services;
 
-namespace ServiceBusTool.Blazor
+namespace ServiceBusTool
 {
     public static class MauiProgram
     {

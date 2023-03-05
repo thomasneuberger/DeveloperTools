@@ -1,4 +1,4 @@
-﻿namespace ServiceBusTool.Blazor
+﻿namespace ServiceBusTool
 {
     public partial class MainPage : ContentPage
     {
