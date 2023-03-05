@@ -39,12 +39,6 @@ public partial class Index
         set => Model.SelectQueueName(value);
     }
 
-    public MessageDefinition? SelectedMessageDefinition
-    {
-        get => null;
-        set => Model.SelectMessageDefinition(value?.Body);
-    }
-
     public string? Message
     {
         get => Model.SelectedMessage;

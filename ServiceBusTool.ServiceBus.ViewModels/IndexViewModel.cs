@@ -79,20 +79,10 @@ public class IndexViewModel
         }
     }
 
-    public void SelectMessageDefinition(object? value)
+    public void SelectMessageDefinition(MessageDefinition messageDefinition)
     {
-        if (MessageDefinitions is null)
-        {
-            _logger.LogError("Message definition selected, but MessageDefinitions is null.");
-            return;
-        }
-
-        if (value is string idString && Guid.TryParse(idString, out Guid id))
-        {
-            var messageDefinition = MessageDefinitions.First(m => m.Id == id);
-            SelectedMessage = messageDefinition.Body;
-            OnMessageChanged(SelectedMessage);
-        }
+        SelectedMessage = messageDefinition.Body;
+        OnMessageChanged(SelectedMessage);
     }
 
     public void OnMessageChanged(object? args) {
