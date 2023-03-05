@@ -12,19 +12,33 @@ public partial class Index
     private IndexViewModel Model { get; set; }
 
     [Inject]
-    private IDialogService DialogService { get; set; }
+    private ISnackbar Snackbar { get; set; }
 #pragma warning restore CS8618
 
     protected override async Task OnInitializedAsync()
     {
         Model.QueueNamesLoaded += QueueNamesLoaded;
+        Model.MessageSent += MessageSent;
+        Model.MessageError += MessageError;
         await Model.OnInitializedAsync();
     }
-    
 
     private void QueueNamesLoaded(object? sender, EventArgs e)
     {
         StateHasChanged();
+    }
+
+    private void MessageSent(object? sender, string message)
+    {
+        Snackbar.Add("Message sent", Severity.Success);
+    }
+
+    private void MessageError(object? sender, Exception exception)
+    {
+        Snackbar.Add($"Error sending message: {exception.Message}", Severity.Error, options =>
+        {
+            options.RequireInteraction = true;
+        });
     }
 
     public Connection? SelectedConnection

@@ -38,6 +38,10 @@ public class IndexViewModel
 
     public event EventHandler? QueueNamesLoaded;
 
+    public event EventHandler<string>? MessageSent;
+
+    public event EventHandler<Exception>? MessageError;
+
     public async Task OnInitializedAsync()
     {
         Connections = await _connectionManager.GetValuesAsync();
@@ -117,7 +121,7 @@ public class IndexViewModel
         }
     }
 
-    public void SendMessage()
+    public async Task SendMessageAsync()
     {
         if (SelectedConnection is null)
         {
@@ -134,7 +138,16 @@ public class IndexViewModel
         {
             message = message.Replace($"%{parameter.Name}%", parameter.Value, StringComparison.InvariantCultureIgnoreCase);
         }
-        _serviceBus.SendMessage(SelectedConnection, SelectedQueueName, SelectedMessage, MessageParameters, CancellationToken.None);
-        _logger.LogInformation("Message {Message} sent", message);
+        try
+        {
+            await _serviceBus.SendMessageAsync(SelectedConnection, SelectedQueueName, SelectedMessage, MessageParameters, CancellationToken.None);
+            _logger.LogInformation("Message {Message} sent", message);
+            MessageSent?.Invoke(this, message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error sending message: {exception}", ex);
+            MessageError?.Invoke(this, ex);
+        }
     }
 }

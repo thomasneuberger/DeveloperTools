@@ -26,7 +26,7 @@ public class AzureServiceBus : IServiceBus
         return queueNames;
     }
 
-    public async Task SendMessage(
+    public async Task SendMessageAsync(
         Connection connection,
         string queueName,
         string message,
@@ -53,6 +53,7 @@ public class AzureServiceBus : IServiceBus
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception sending message {Message}: {Exception}", message, ex);
+            throw;
         }
     }
 }

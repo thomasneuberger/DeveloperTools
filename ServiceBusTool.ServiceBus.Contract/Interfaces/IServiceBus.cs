@@ -6,7 +6,7 @@ public interface IServiceBus
 {
     Task<IEnumerable<string>> GetQueueNames(Connection connection, CancellationToken cancellationToken);
 
-    Task SendMessage(
+    Task SendMessageAsync(
         Connection connection,
         string queueName,
         string message,

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MudBlazor;
 using MudBlazor.Services;
 using ServiceBusTool.ServiceBus.Azure;
 using ServiceBusTool.ServiceBus.Contract.Interfaces;
@@ -31,7 +32,10 @@ public static class MauiProgram
             
         builder.Services.AddSingleton<IKeyValueStore, KeyValueStore>();
 
-        builder.Services.AddMudServices();
+        builder.Services.AddMudServices(config =>
+        {
+            config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
+        });
 
         builder.Services.AddManagers();
         builder.Services.AddViewModels();
