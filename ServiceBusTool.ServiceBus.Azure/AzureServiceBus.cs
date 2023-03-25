@@ -22,8 +22,11 @@ public class AzureServiceBus : IServiceBus
         var queues = await client.GetQueuesAsync(cancellationToken)
             .ToListAsync(cancellationToken);
         var queueNames = queues.Select(q => q.Name).ToList();
+        var topics = await client.GetTopicsAsync(cancellationToken)
+            .ToListAsync(cancellationToken);
+        var topicNames = topics.Select(t => t.Name).ToList();
         
-        return queueNames;
+        return queueNames.Concat(topicNames).ToArray();
     }
 
     public async Task SendMessageAsync(
