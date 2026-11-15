@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directories:
+      - "/ServiceBusTool"
+      - "/ServiceBusTool.ServiceBus.Azure"
+      - "/ServiceBusTool.ServiceBus.Contract"
+      - "/ServiceBusTool.ServiceBus.Managers"
+      - "/ServiceBusTool.ServiceBus.Models"
+      - "/ServiceBusTool.ServiceBus.ViewModels"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
